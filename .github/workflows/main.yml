@@ -4,9 +4,7 @@ on:
   schedule:
     - cron: 0 2 * * *
   push:
-    - *
   pull_request:
-    - *
   
 jobs:
   terraform:
