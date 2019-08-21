@@ -33,9 +33,9 @@ jobs:
           TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
           TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
       - name: Print branch
-        run: echo "$GITHUB_BRANCH"
+        run: echo "$BRANCH"
         env:
-          GITHUB_BRANCH: echo ${GITHUB_REF} | tr '/' '\n' | tail -1
+          BRANCH: echo ${GITHUB_REF} | tr '/' '\n' | tail -1
       - name: Apply Terraform
         run: |
           terraform apply -auto-approve
