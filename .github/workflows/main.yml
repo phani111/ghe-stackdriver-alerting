@@ -2,10 +2,9 @@ name: CI
 
 on:
   push:
-    branches:
-      - dev
-      - stage
-      - prod
+  pull_request:
+  schedule:
+    - cron: "0 * * * *"
 
 jobs:
   terraform:
@@ -31,14 +30,21 @@ jobs:
           echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> /tmp/.env
           echo "export TF_VAR_branch=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)" >> /tmp/.env
       - name: Init Terraform
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/prod'
         run: |
           source /tmp/.env
           ./tf.sh init
+      - name: Init Terraform (no backend)
+        if: github.ref != 'refs/heads/dev' && github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/prod'
+        run: |
+          source /tmp/.env
+          ./tf.sh init -backend=false
       - name: Validate Terraform Configuration
         run: |
           source /tmp/.env
           ./tf.sh validate
       - name: Apply Terraform
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/prod'
         run: |
           source /tmp/.env
           ./tf.sh apply -auto-approve
