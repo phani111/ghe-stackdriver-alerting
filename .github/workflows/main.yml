@@ -1,11 +1,6 @@
 name: CI
 
-on:
-  push:
-    branches:
-      - dev
-      - stage
-      - prod
+on: [push, pull_request]
 
 jobs:
   terraform:
