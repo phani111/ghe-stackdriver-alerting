@@ -15,7 +15,6 @@ jobs:
         run: |
           echo "export BRANCH=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)" >> .env
           source .env
-          echo $BRANCH
       - name: Install Terraform
         run: |
           sudo rm -f /usr/local/bin/terraform
@@ -25,31 +24,24 @@ jobs:
           terraform -v
       - name: Setup GCP Service Accounts
         run: |
-          echo "$GCP_SERVICE_ACCOUNT" | base64 --decode > /tmp/gcp-service-account.json
-        env:
-          GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+          echo ${{ secrets.GCP_SERVICE_ACCOUNT }}| base64 --decode > /tmp/gcp-service-account.json
+          echo "export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-service-account.json" >> .env
+          echo "export GOOGLE_CREDENTIALS=/tmp/gcp-service-account.json" >> .env
+      - name: Setup Terraform Vars
+        run: |
+          echo "export TF_VAR_slack_hook=${{ secrets.SLACK_HOOK }}" >> .env
+          echo "export TF_VAR_slack_channel=${{ secrets.SLACK_CHANNEL }}" >> .env
+          echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> .env
       - uses: actions/checkout@v1
       - name: Init Terraform
         run: |
+          source .env
           terraform init
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-service-account.json
-          GOOGLE_CREDENTIALS: /tmp/gcp-service-account.json
       - name: Validate Terraform Configuration
         run: |
+          source .env
           terraform validate
-        env:
-          TF_VAR_slack_hook: ${{ secrets.SLACK_HOOK }}
-          TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
-          TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
-      - name: Print branch
-        run: echo $BRANCH
       - name: Apply Terraform
         run: |
+          source .env
           terraform apply -auto-approve
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-service-account.json
-          GOOGLE_CREDENTIALS: /tmp/gcp-service-account.json
-          TF_VAR_slack_hook: ${{ secrets.SLACK_HOOK }}
-          TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
-          TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
