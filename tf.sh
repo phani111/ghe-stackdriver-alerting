@@ -3,7 +3,7 @@
 tf_command=$@
 
 # vars
-branch=$(git rev-parse --abbrev-ref HEAD)
+branch=$TF_VAR_branch || $(git rev-parse --abbrev-ref HEAD)
 gcs_bucket="sap-tools-secrets-$branch"
 gcs_prefix="stackdriver-tf-state/$branch"
 gcp_project="sap-pi-ops-tools-$branch-github"
