@@ -26,7 +26,7 @@ variable "prefix" {
 }
 
 variable "enabled" {
-  default = true
+  default = false
 }
 
 variable "slack_hook" {}
