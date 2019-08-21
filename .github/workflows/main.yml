@@ -6,6 +6,10 @@ jobs:
   terraform:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup Env
+        run: |
+          export BRANCH=${echo ${GITHUB_REF} | tr '/' '\n' | tail -1}
+          echo "$BRANCH"
       - name: Install Terraform
         run: |
           sudo rm -f /usr/local/bin/terraform
