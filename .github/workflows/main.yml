@@ -23,13 +23,13 @@ jobs:
           echo ${{ secrets.GCP_SERVICE_ACCOUNT }}| base64 --decode > /tmp/gcp-service-account.json
           echo "export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-service-account.json" >> /tmp/.env
           echo "export GOOGLE_CREDENTIALS=/tmp/gcp-service-account.json" >> /tmp/.env
+      - uses: actions/checkout@v1
       - name: Setup Terraform Vars
         run: |
           echo "export TF_VAR_slack_hook=${{ secrets.SLACK_HOOK }}" >> /tmp/.env
           echo "export TF_VAR_slack_channel=${{ secrets.SLACK_CHANNEL }}" >> /tmp/.env
           echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> /tmp/.env
           echo "export TF_VAR_branch=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)" >> /tmp/.env
-      - uses: actions/checkout@v1
       - name: Init Terraform
         run: |
           source /tmp/.env
@@ -41,4 +41,4 @@ jobs:
       - name: Apply Terraform
         run: |
           source /tmp/.env
-          terraform apply -auto-approve
+          ./deplpy.sh

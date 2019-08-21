@@ -19,13 +19,13 @@ resource "google_logging_metric" "ghe_instance_b_logging_metric" {
 }
 
 resource "google_monitoring_alert_policy" "ghe_instance_logging" {
-  display_name = "${var.prefix}GHE Instance Logging"
+  display_name = "${local.prefix}GHE Instance Logging"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = [
     {
-      display_name = "${var.prefix}logging/user/${google_logging_metric.ghe_instance_a_logging_metric.name} [SUM]"
+      display_name = "${local.prefix}logging/user/${google_logging_metric.ghe_instance_a_logging_metric.name} [SUM]"
 
       condition_threshold {
         filter          = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.ghe_instance_a_logging_metric.name}\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -45,7 +45,7 @@ resource "google_monitoring_alert_policy" "ghe_instance_logging" {
       }
     },
     {
-      display_name = "${var.prefix}logging/user/${google_logging_metric.ghe_instance_b_logging_metric.name} [SUM]"
+      display_name = "${local.prefix}logging/user/${google_logging_metric.ghe_instance_b_logging_metric.name} [SUM]"
 
       condition_threshold {
         filter          = "metric.type=\"logging.googleapis.com/user/${google_logging_metric.ghe_instance_b_logging_metric.name}\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -86,12 +86,12 @@ Stackdriver / Prometheus Exporter `tail -f /var/log/stackdriver-prometheus-expor
 }
 
 resource "google_monitoring_alert_policy" "vm_instance_down" {
-  display_name = "${var.prefix}VM Instance Down"
+  display_name = "${local.prefix}VM Instance Down"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = [{
-    display_name = "${var.prefix}Any VM Instance Down"
+    display_name = "${local.prefix}Any VM Instance Down"
 
     condition_threshold {
       filter          = "metric.type=\"compute.googleapis.com/instance/uptime\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\" metric.label.\"instance_name\"!=monitoring.regex.full_match(\"bastion\")"
@@ -124,12 +124,12 @@ Please restart Instance.
 }
 
 resource "google_monitoring_alert_policy" "vm_disk_utilization" {
-  display_name = "${var.prefix}VM Disk Utilization"
+  display_name = "${local.prefix}VM Disk Utilization"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = [{
-    display_name = "${var.prefix}Any Disk over 80% utilization"
+    display_name = "${local.prefix}Any Disk over 80% utilization"
 
     condition_threshold {
       filter          = "metric.type=\"agent.googleapis.com/disk/percent_used\" resource.type=\"gce_instance\" metric.label.\"state\"=\"used\" metadata.user_labels.\"env\"=\"${var.branch}\" metric.label.\"device\"=\"sda1\""
@@ -161,7 +161,7 @@ VM Disk utilization is over 80%. Check logrotation and/or increase disk size.
 }
 
 resource "google_monitoring_uptime_check_config" "ghe_http_uptime" {
-  display_name = "${var.prefix}GitHub HTTPS Uptime Check"
+  display_name = "${local.prefix}GitHub HTTPS Uptime Check"
   timeout      = "10s"
   period       = "300s"
 
@@ -176,18 +176,18 @@ resource "google_monitoring_uptime_check_config" "ghe_http_uptime" {
 
     labels = {
       project_id = "${var.gcp_project}"
-      host       = "${var.hostname}"
+      host       = "${local.hostname}"
     }
   }
 }
 
 resource "google_monitoring_alert_policy" "ghe_https_status" {
-  display_name = "${var.prefix}GitHub HTTPS Status Check"
+  display_name = "${local.prefix}GitHub HTTPS Status Check"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions {
-    display_name = "${var.prefix}Generic HTTPS check on github.tools.sap at /status"
+    display_name = "${local.prefix}Generic HTTPS check on github.tools.sap at /status"
 
     condition_threshold {
       filter          = "metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" resource.type=\"uptime_url\" metric.label.\"check_id\"=\"${google_monitoring_uptime_check_config.ghe_http_uptime.uptime_check_id}\""
@@ -221,12 +221,12 @@ GitHub not healthy.
 }
 
 resource "google_monitoring_alert_policy" "ghe_backup_absent" {
-  display_name = "${var.prefix}GHE Backup Absent"
+  display_name = "${local.prefix}GHE Backup Absent"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = [{
-    display_name = "${var.prefix}Backup Create Job Completion Time"
+    display_name = "${local.prefix}Backup Create Job Completion Time"
 
     condition_threshold {
       filter          = "metric.type=\"custom.googleapis.com/github/backup_create_job_completion_time\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -245,7 +245,7 @@ resource "google_monitoring_alert_policy" "ghe_backup_absent" {
     }
   },
     {
-      display_name = "${var.prefix}Backup Upload Job Completion Time"
+      display_name = "${local.prefix}Backup Upload Job Completion Time"
 
       condition_threshold {
         filter          = "metric.type=\"custom.googleapis.com/github/backup_upload_job_completion_time\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -278,12 +278,12 @@ GHE Backup failed.
 }
 
 resource "google_monitoring_alert_policy" "ghe_hookshot_queue" {
-  display_name = "${var.prefix}GHE Hookshot Queue"
+  display_name = "${local.prefix}GHE Hookshot Queue"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = {
-    display_name = "${var.prefix}GHE Hookshot Queue is filling"
+    display_name = "${local.prefix}GHE Hookshot Queue is filling"
 
     condition_threshold {
       filter          = "metric.type=\"custom.googleapis.com/github/listener_gauge\" resource.type=\"gce_instance\" metric.label.\"listener\"=\"hookshot\" metric.label.\"type\"=\"queued\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -315,12 +315,12 @@ GHE Hookshot Queue is filling, WebHooks are not executed.
 }
 
 resource "google_monitoring_alert_policy" "ghe_deferred_mails" {
-  display_name = "${var.prefix}GHE Deferred Mails"
+  display_name = "${local.prefix}GHE Deferred Mails"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = {
-    display_name = "${var.prefix}Mails Deferred"
+    display_name = "${local.prefix}Mails Deferred"
 
     condition_threshold {
       filter          = "metric.type=\"custom.googleapis.com/github/filecount_files\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\" metric.label.\"filecount\"=\"mail-deferred\""
@@ -352,12 +352,12 @@ Mails are deferred, Mailqueues are filling up.
 }
 
 resource "google_monitoring_alert_policy" "ghe_elastic_index_status" {
-  display_name = "${var.prefix}GHE Elasticsearch Index Status"
+  display_name = "${local.prefix}GHE Elasticsearch Index Status"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = {
-    display_name = "${var.prefix}Elasticsearch Indexes unhealthy"
+    display_name = "${local.prefix}Elasticsearch Indexes unhealthy"
 
     condition_threshold {
       filter          = "metric.type=\"custom.googleapis.com/github/ghe_es_index_status\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -389,12 +389,12 @@ Elasticsearch Indexes of GHE unhealthy.
 }
 
 resource "google_monitoring_alert_policy" "ghe_replication_status" {
-  display_name = "${var.prefix}GHE Replication Status"
+  display_name = "${local.prefix}GHE Replication Status"
   combiner     = "OR"
-  enabled      = "${var.enabled}"
+  enabled      = "${local.enabled}"
 
   conditions = [{
-    display_name = "${var.prefix}Repliaction Warning"
+    display_name = "${local.prefix}Repliaction Warning"
 
     condition_threshold {
       filter          = "metric.type=\"custom.googleapis.com/github/ghe_repl_status\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""
@@ -413,7 +413,7 @@ resource "google_monitoring_alert_policy" "ghe_replication_status" {
     }
   },
     {
-      display_name = "${var.prefix}Repliaction Error"
+      display_name = "${local.prefix}Repliaction Error"
 
       condition_threshold {
         filter          = "metric.type=\"custom.googleapis.com/github/ghe_repl_status\" resource.type=\"gce_instance\" metadata.user_labels.\"env\"=\"${var.branch}\""

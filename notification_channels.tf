@@ -1,5 +1,5 @@
 resource "google_monitoring_notification_channel" "ghe-email" {
-  display_name = "${var.prefix}GitHub Enterprise DL"
+  display_name = "${local.prefix}GitHub Enterprise DL"
   type         = "email"
 
   labels = {
@@ -8,7 +8,7 @@ resource "google_monitoring_notification_channel" "ghe-email" {
 }
 
 resource "google_monitoring_notification_channel" "ghe-ops-slack" {
-  display_name = "${var.prefix}GHE Ops Slack Channel"
+  display_name = "${local.prefix}GHE Ops Slack Channel"
   type         = "slack"
 
   labels = {
