@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Setup Env
         run: |
-          echo "export BRANCH=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)" >> .env
-          source .env
+          echo "export BRANCH=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)" >> /tmp/.env
+          source /tmp/.env
       - name: Install Terraform
         run: |
           sudo rm -f /usr/local/bin/terraform
@@ -25,23 +25,23 @@ jobs:
       - name: Setup GCP Service Accounts
         run: |
           echo ${{ secrets.GCP_SERVICE_ACCOUNT }}| base64 --decode > /tmp/gcp-service-account.json
-          echo "export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-service-account.json" >> .env
-          echo "export GOOGLE_CREDENTIALS=/tmp/gcp-service-account.json" >> .env
+          echo "export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-service-account.json" >> /tmp/.env
+          echo "export GOOGLE_CREDENTIALS=/tmp/gcp-service-account.json" >> /tmp/.env
       - name: Setup Terraform Vars
         run: |
-          echo "export TF_VAR_slack_hook=${{ secrets.SLACK_HOOK }}" >> .env
-          echo "export TF_VAR_slack_channel=${{ secrets.SLACK_CHANNEL }}" >> .env
-          echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> .env
+          echo "export TF_VAR_slack_hook=${{ secrets.SLACK_HOOK }}" >> /tmp/.env
+          echo "export TF_VAR_slack_channel=${{ secrets.SLACK_CHANNEL }}" >> /tmp/.env
+          echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> /tmp/.env
       - uses: actions/checkout@v1
       - name: Init Terraform
         run: |
-          source .env
+          source /tmp/.env
           terraform init
       - name: Validate Terraform Configuration
         run: |
-          source .env
+          source /tmp/.env
           terraform validate
       - name: Apply Terraform
         run: |
-          source .env
+          source /tmp/.env
           terraform apply -auto-approve
