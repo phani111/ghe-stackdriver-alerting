@@ -13,7 +13,8 @@ jobs:
     steps:
       - name: Setup Env
         run: |
-          export BRANCH=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)
+          echo $(export BRANCH=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)) >> .env
+          source .env
           echo $BRANCH
       - name: Install Terraform
         run: |
