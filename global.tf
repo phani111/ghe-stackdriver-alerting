@@ -30,6 +30,7 @@ variable "enabled" {
 }
 
 variable "slack_hook" {}
+variable "slack_channel" {}
 variable "support_email" {}
 
 provider "google" {

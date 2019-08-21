@@ -13,6 +13,6 @@ resource "google_monitoring_notification_channel" "ghe-ops-slack" {
 
   labels = {
     auth_token   = "${var.slack_hook}"
-    channel_name = ""
+    channel_name = "${var.slack_channel}"
   }
 }

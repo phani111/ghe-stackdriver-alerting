@@ -35,4 +35,5 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-service-account.json
           GOOGLE_CREDENTIALS: /tmp/gcp-service-account.json     
           TF_VAR_slack_hook: ${{ secrets.SLACK_HOOK }}
+          TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
           TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
