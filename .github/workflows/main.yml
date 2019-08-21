@@ -33,4 +33,4 @@ jobs:
       - name: Apply Terraform
         run: |
           source /tmp/.env
-          ./deplpy.sh
+          ./deploy.sh
