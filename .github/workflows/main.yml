@@ -18,6 +18,7 @@ jobs:
           sudo rm -f ./terraform_0.11.14_linux_amd64.zip
           terraform -v
       - name: Setup GCP Service Accounts
+        if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/prod'
         run: |
           echo ${{ secrets.GCP_SERVICE_ACCOUNT }}| base64 --decode > /tmp/gcp-service-account.json
           echo "export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-service-account.json" >> /tmp/.env
