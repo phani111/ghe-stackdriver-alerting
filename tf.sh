@@ -2,7 +2,11 @@
 
 tf_command=$@
 
-branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+# vars
+branch=$(git branch | grep \* | cut -d ' ' -f2)
+gcs_bucket="sap-tools-secrets-$branch"
+gcs_prefix="stackdriver-tf-state/$branch"
+gcp_project="sap-pi-ops-tools-$branch-github"
 
 # Locate Root Dir
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
@@ -13,14 +17,11 @@ if [[ $tf_command == "init" ]] || [[ $tf_command == "init*" ]]; then
     rm -f $DIR/.terraform.tfstate
     rm -f $DIR/.terraform.tfstate.backup
 
-    gcs_bucket="sap-tools-secrets-$branch"
-    gcs_prefix="stackdriver-tf-state/$branch"
-
     terraform $tf_command \
         -backend-config="bucket=$gcs_bucket" \
         -backend-config="prefix=$gcs_prefix"
 else
     terraform $tf_command \
         -var="branch=$branch" \
-        -var="gcp_project=sap-pi-ops-tools-$branch-github"
+        -var="gcp_project=$gcp_project"
 fi
