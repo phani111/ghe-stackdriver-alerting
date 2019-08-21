@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: Install Terraform
         run: |
-          sudo rm -rf /usr/local/bin/terraform
+          sudo rm -f /usr/local/bin/terraform
           wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
           sudo unzip ./terraform_0.11.14_linux_amd64.zip -d /usr/local/bin/
           sudo rm -f ./terraform_0.11.14_linux_amd64.zip
@@ -31,7 +31,9 @@ jobs:
         env:
           TF_VAR_slack_hook: ${{ secrets.SLACK_HOOK }}
           TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
-          TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}          
+          TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
+      - name: Print branch
+        run: echo ${GITHUB_REF}
       - name: Apply Terraform
         run: |
           terraform apply -auto-approve
