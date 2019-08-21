@@ -8,8 +8,8 @@ jobs:
     steps:
       - name: Setup Env
         run: |
-          export BRANCH=${echo ${GITHUB_REF} | tr '/' '\n' | tail -1}
-          echo "$BRANCH"
+          export BRANCH=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)
+          echo $BRANCH
       - name: Install Terraform
         run: |
           sudo rm -f /usr/local/bin/terraform
@@ -37,7 +37,7 @@ jobs:
           TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
           TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
       - name: Print branch
-        run: echo "$BRANCH"
+        run: echo $BRANCH
         env:
           BRANCH: echo ${GITHUB_REF} | tr '/' '\n' | tail -1
       - name: Apply Terraform
