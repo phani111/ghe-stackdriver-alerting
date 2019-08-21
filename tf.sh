@@ -1,7 +1,8 @@
 #!/bin/bash
 
-branch=$1
-tf_command=$2
+tf_command=$@
+
+branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
 
 # Locate Root Dir
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"

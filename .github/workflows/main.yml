@@ -33,12 +33,12 @@ jobs:
       - name: Init Terraform
         run: |
           source /tmp/.env
-          ./tf.sh $TF_VAR_branch init
+          ./tf.sh init
       - name: Validate Terraform Configuration
         run: |
           source /tmp/.env
-          ./tf.sh $TF_VAR_branch validate
+          ./tf.sh validate
       - name: Apply Terraform
         run: |
           source /tmp/.env
-          ./tf.sh $TF_VAR_branch "apply -auto-approve"
+          ./tf.sh apply -auto-approve
