@@ -36,10 +36,10 @@ jobs:
           source /tmp/.env
           ./tf.sh init
       - name: Init Terraform (no backend)
-        if: github.ref != 'refs/heads/dev' || github.ref != 'refs/heads/stage' || github.ref != 'refs/heads/prod'
+        if: github.ref != 'refs/heads/dev' && github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/prod'
         run: |
           source /tmp/.env
-          ./tf.sh init
+          ./tf.sh init -backend=false
       - name: Validate Terraform Configuration
         run: |
           source /tmp/.env
