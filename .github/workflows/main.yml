@@ -1,6 +1,11 @@
 name: CI
 
-on: [push]
+on:
+  push:
+    branches:
+      - dev
+      - stage
+      - prod
 
 jobs:
   terraform:
@@ -43,7 +48,7 @@ jobs:
           terraform apply -auto-approve
         env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/gcp-service-account.json
-          GOOGLE_CREDENTIALS: /tmp/gcp-service-account.json     
+          GOOGLE_CREDENTIALS: /tmp/gcp-service-account.json
           TF_VAR_slack_hook: ${{ secrets.SLACK_HOOK }}
           TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
           TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}
