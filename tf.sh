@@ -1,6 +1,7 @@
 #!/bin/bash
 
-branch=$TF_VAR_branch
+branch=$1
+tf_command=$2
 
 # Locate Root Dir
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
@@ -13,10 +14,8 @@ rm -f $DIR/.terraform.tfstate.backup
 gcs_bucket="sap-tools-secrets-$branch"
 gcs_prefix="stackdriver-tf-state/$branch"
 
-terraform init \
+terraform $tf_command \
     -backend-config="bucket=$gcs_bucket" \
-    -backend-config="prefix=$gcs_prefix"
-
-terraform apply -auto-approve \
+    -backend-config="prefix=$gcs_prefix" \
     -var="branch=$branch" \
     -var="gcp_project=sap-pi-ops-tools-$branch-github"

@@ -30,7 +30,15 @@ jobs:
           echo "export TF_VAR_slack_channel=${{ secrets.SLACK_CHANNEL }}" >> /tmp/.env
           echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> /tmp/.env
           echo "export TF_VAR_branch=$(echo ${GITHUB_REF} | tr '/' '\n' | tail -1)" >> /tmp/.env
+      - name: Init Terraform
+        run: |
+          source /tmp/.env
+          ./tf.sh $TF_VAR_branch init
+      - name: Validate Terraform Configuration
+        run: |
+          source /tmp/.env
+          ./tf.sh $TF_VAR_branch validate
       - name: Apply Terraform
         run: |
           source /tmp/.env
-          ./deploy.sh
+          ./tf.sh $TF_VAR_branch "apply -auto-approve"
