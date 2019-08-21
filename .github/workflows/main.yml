@@ -28,6 +28,10 @@ jobs:
       - name: Validate Terraform Configuration
         run: |
           terraform validate
+        env:
+          TF_VAR_slack_hook: ${{ secrets.SLACK_HOOK }}
+          TF_VAR_slack_channel: ${{ secrets.SLACK_CHANNEL }}
+          TF_VAR_support_email: ${{ secrets.SUPPORT_EMAIL }}          
       - name: Apply Terraform
         run: |
           terraform apply -auto-approve
