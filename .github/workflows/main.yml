@@ -24,6 +24,7 @@ jobs:
       - uses: actions/checkout@v1
       - name: Setup Terraform Vars
         run: |
+          echo "export TF_IN_AUTOMATION=1" >> /tmp/.env
           echo "export TF_VAR_slack_hook=${{ secrets.SLACK_HOOK }}" >> /tmp/.env
           echo "export TF_VAR_slack_channel=${{ secrets.SLACK_CHANNEL }}" >> /tmp/.env
           echo "export TF_VAR_support_email=${{ secrets.SUPPORT_EMAIL }}" >> /tmp/.env
@@ -32,18 +33,18 @@ jobs:
         if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/prod'
         run: |
           source /tmp/.env
-          ./tf.sh init
+          ./tf.sh init -input=false
       - name: Init Terraform (no backend)
         if: github.ref != 'refs/heads/dev' && github.ref != 'refs/heads/stage' && github.ref != 'refs/heads/prod'
         run: |
           source /tmp/.env
-          ./tf.sh init -backend=false
+          ./tf.sh init -backend=false -input=false
       - name: Validate Terraform Configuration
         run: |
           source /tmp/.env
-          ./tf.sh validate
+          ./tf.sh validate -input=false
       - name: Apply Terraform
         if: github.ref == 'refs/heads/dev' || github.ref == 'refs/heads/stage' || github.ref == 'refs/heads/prod'
         run: |
           source /tmp/.env
-          ./tf.sh apply -auto-approve
+          ./tf.sh apply -auto-approve -input=false
